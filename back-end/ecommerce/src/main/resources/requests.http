@@ -1,0 +1,75 @@
+### Signup
+POST http://localhost:8080/api/auth/signup
+Content-Type: application/json
+
+{
+  "username": "alice",
+  "email": "alice@example.com",
+  "password": "123456"
+}
+
+### Login
+POST http://localhost:8080/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "alice",
+  "password": "123456"
+}
+
+### Get all posts (public)
+GET http://localhost:8080/api/posts
+
+### Create post (Bearer <token>)
+POST http://localhost:8080/api/posts
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "title": "Post 1",
+  "content": "Nội dung bài 1",
+  "tags": ["spring","angular"]
+}
+
+### Update post
+PUT http://localhost:8080/api/posts/{{postId}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "title": "Post 1 (updated)",
+  "content": "Nội dung sửa",
+  "tags": ["spring","jwt"]
+}
+
+### Delete post
+DELETE http://localhost:8080/api/posts/{{postId}}
+Authorization: Bearer {{token}}
+
+### Comments by post
+GET http://localhost:8080/api/comments/post/{{postId}}
+
+### Add comment
+POST http://localhost:8080/api/comments/post/{{postId}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "content": "Bình luận đầu tiên!"
+}
+
+### Update comment
+PUT http://localhost:8080/api/comments/{{commentId}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "content": "Sửa bình luận"
+}
+
+### Delete comment
+DELETE http://localhost:8080/api/comments/{{commentId}}
+Authorization: Bearer {{token}}
+
+### Users (admin tool / demo)
+GET http://localhost:8080/api/users
