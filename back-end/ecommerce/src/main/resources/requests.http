@@ -1,75 +1,60 @@
-### Signup
+### 1. Đăng ký tài khoản mới
 POST http://localhost:8080/api/auth/signup
 Content-Type: application/json
 
 {
-  "username": "alice",
-  "email": "alice@example.com",
+  "username": "nghia26",
+  "email": "nghia26@example.com",
   "password": "123456"
 }
 
-### Login
-POST http://localhost:8080/api/auth/login
+### 2. Đăng nhập (lấy AccessToken + RefreshToken)
+POST http://localhost:8080/api/auth/signin
 Content-Type: application/json
 
 {
-  "username": "alice",
+  "usernameOrEmail": "nghia26",
   "password": "123456"
 }
 
-### Get all posts (public)
-GET http://localhost:8080/api/posts
+> {%
+    client.global.set("accessToken", response.body.accessToken);
+    client.global.set("refreshToken", response.body.refreshToken);
+%}
 
-### Create post (Bearer <token>)
-POST http://localhost:8080/api/posts
+### 3. Gọi API cần authentication (test access token)
+GET http://localhost:8080/api/users/me
+Authorization: Bearer {{accessToken}}
+
+### 4. Refresh token (lấy access token mới)
+POST http://localhost:8080/api/auth/refresh
 Content-Type: application/json
-Authorization: Bearer {{token}}
 
 {
-  "title": "Post 1",
-  "content": "Nội dung bài 1",
-  "tags": ["spring","angular"]
+  "refreshToken": "{{refreshToken}}"
 }
 
-### Update post
-PUT http://localhost:8080/api/posts/{{postId}}
+> {%
+    client.global.set("accessToken", response.body.accessToken);
+    client.global.set("refreshToken", response.body.refreshToken);
+%}
+
+### 5. Đổi mật khẩu
+POST http://localhost:8080/api/auth/change-password
+Authorization: Bearer {{accessToken}}
 Content-Type: application/json
-Authorization: Bearer {{token}}
 
 {
-  "title": "Post 1 (updated)",
-  "content": "Nội dung sửa",
-  "tags": ["spring","jwt"]
+
+  "oldPassword": "123456",
+  "newPassword": "654321"
 }
 
-### Delete post
-DELETE http://localhost:8080/api/posts/{{postId}}
-Authorization: Bearer {{token}}
-
-### Comments by post
-GET http://localhost:8080/api/comments/post/{{postId}}
-
-### Add comment
-POST http://localhost:8080/api/comments/post/{{postId}}
+### 6. Đăng nhập lại bằng mật khẩu mới
+POST http://localhost:8080/api/auth/signin
 Content-Type: application/json
-Authorization: Bearer {{token}}
 
 {
-  "content": "Bình luận đầu tiên!"
+  "usernameOrEmail": "nghia26",
+  "password": "654321"
 }
-
-### Update comment
-PUT http://localhost:8080/api/comments/{{commentId}}
-Content-Type: application/json
-Authorization: Bearer {{token}}
-
-{
-  "content": "Sửa bình luận"
-}
-
-### Delete comment
-DELETE http://localhost:8080/api/comments/{{commentId}}
-Authorization: Bearer {{token}}
-
-### Users (admin tool / demo)
-GET http://localhost:8080/api/users
