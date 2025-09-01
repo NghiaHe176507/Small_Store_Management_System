@@ -24,6 +24,13 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/user/**").authenticated()
+                        .requestMatchers("/api/capsules/public").permitAll()
+                        .requestMatchers("/api/capsules/**").authenticated()
+                        .requestMatchers("/api/reactions/**").authenticated()
+                        .requestMatchers("/api/likes/**").authenticated()
+                        .requestMatchers("/api/dislikes/**").authenticated()
+                        .requestMatchers("/api/comments/**").authenticated()
+                        .requestMatchers("/api/notifications/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

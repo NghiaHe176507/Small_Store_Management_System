@@ -1,38 +1,37 @@
 package com.nghia.ecommerce.model;
 
-import com.nghia.ecommerce.model.enums.NotificationType;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "notifications")
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class Notification {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String message;
+
+    @Column(name = "is_read")
+    private Boolean isRead = false;
+
+    private LocalDateTime createdAt;
+
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="user_id")
-    private User user;
-
-    @Enumerated(EnumType.STRING)
-    private NotificationType type;
-
-    @Column(columnDefinition = "TEXT")
-    private String payload; // JSON string
-
-    private boolean isRead = false;
-
-    private Instant createdAt;
+    @JoinColumn(name = "user_id", nullable = false)
+    private User recipient;
 
     @PrePersist
-    public void prePersist() {
-        createdAt = Instant.now();
+    public void onCreate() {
+        createdAt = LocalDateTime.now();
+        isRead = false;
     }
 }

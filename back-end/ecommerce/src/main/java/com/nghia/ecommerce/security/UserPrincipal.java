@@ -16,6 +16,12 @@ public class UserPrincipal implements UserDetails {
 
     private final User user;
 
+
+
+    public Long getId() {
+        return user.getId();
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Set<Role> roles = user.getRoles();
@@ -57,4 +63,5 @@ public class UserPrincipal implements UserDetails {
     public User getUser() {
         return user;
     }
+
 }

@@ -1,0 +1,172 @@
+### ===================== AUTH =====================
+
+### Đăng ký (signup)
+POST http://localhost:8080/api/auth/signup
+Content-Type: application/json
+
+{
+  "username": "nghiaday",
+  "email": "nghiaday@example.com",
+  "password": "123456"
+}
+
+### Đăng nhập (signin)
+POST http://localhost:8080/api/auth/signin
+Content-Type: application/json
+
+{
+  "usernameOrEmail": "nghiaday",
+  "password": "123456"
+}
+
+> {%
+    client.global.set("accessToken", response.body.accessToken);
+    client.global.set("refreshToken", response.body.refreshToken);
+%}
+### Refresh token
+POST http://localhost:8080/api/auth/refresh
+Content-Type: application/json
+
+{
+  "refreshToken": "{{accessToken}}"
+}
+
+### Đổi mật khẩu
+POST http://localhost:8080/api/auth/change-password
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "oldPassword": "654321",
+  "newPassword": "123456"
+}
+
+
+
+### ===================== USER =====================
+
+### Lấy thông tin profile
+GET http://localhost:8080/api/user/profile
+Authorization: Bearer {{accessToken}}
+
+### Cập nhật profile
+PUT http://localhost:8080/api/user/profile
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "fullName": "Nguyen Van A",
+  "bio": "Tôi thích viết capsule",
+  "avatarUrl": "https://example.com/avatar.jpg"
+}
+
+
+
+### ===================== CAPSULE CRUD =====================
+
+### Tạo capsule
+POST http://localhost:8080/api/capsules
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "title": "Lời nhắn cho tương lai",
+  "content": "Đây là thông điệp bí mật gửi cho năm 2030.",
+  "unlockDate": "2030-01-01T00:00:00",
+  "visibility": "PRIVATE"
+}
+
+### Lấy tất cả capsule của mình
+GET http://localhost:8080/api/capsules/me
+Authorization: Bearer {{accessToken}}
+
+### Lấy danh sách capsule public (mọi người xem được)
+GET http://localhost:8080/api/capsules/public
+
+### Lấy chi tiết capsule theo id
+GET http://localhost:8080/api/capsules/1
+Authorization: Bearer {{accessToken}}
+
+### Cập nhật capsule
+PUT http://localhost:8080/api/capsules/1
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "title": "Lời nhắn đã chỉnh sửa",
+  "content": "Nội dung cập nhật",
+  "unlockDate": "2031-01-01T00:00:00",
+  "visibility": "PUBLIC"
+}
+
+### Xóa capsule
+DELETE http://localhost:8080/api/capsules/1
+Authorization: Bearer {{accessToken}}
+
+---
+
+### ===================== LIKE / UNLIKE =====================
+
+### Like capsule
+POST http://localhost:8080/api/capsules/1/like
+Authorization: Bearer {{accessToken}}
+
+### Unlike capsule
+DELETE http://localhost:8080/api/capsules/1/like
+Authorization: Bearer {{accessToken}}
+
+
+### ======================
+### COMMENT - Thêm/Liệt kê/Sửa/Xoá
+### Dùng capsuleId = 9 (trong sample DB: 'Public Story' đang UNLOCKED)
+### ======================
+
+### Thêm comment vào capsule #9
+POST http://localhost:8080/api/capsules/2/comments
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "content": "Capsule này hay quá!"
+}
+
+### Lấy danh sách comment của capsule #9
+GET http://localhost:8080/api/capsules/2/comments
+Authorization: Bearer {{accessToken}}
+
+### (Ví dụ) Sửa comment với commentId = 2 (đổi id đúng với comment bạn vừa tạo)
+PUT http://localhost:8080/api/capsules/2/comments/3
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "content": "Mình sửa lại comment này!"
+}
+
+### (Ví dụ) Xoá comment với commentId = 3
+DELETE http://localhost:8080/api/capsules/9/comments/2
+Authorization: Bearer {{accessToken}}
+
+### ======================
+### NOTIFICATION
+### ======================
+
+### Lấy danh sách thông báo của mình
+GET http://localhost:8080/api/notifications
+Authorization: Bearer {{accessToken}}
+
+### Đánh dấu 1 thông báo là đã đọc (thay 5 bằng id thực tế bạn thấy ở list)
+PUT http://localhost:8080/api/notifications/1/read
+Authorization: Bearer {{accessToken}}
+
+### ======================
+### UNLOCK CHECK
+### ======================
+### Để test cron unlock, bạn có 2 cách:
+### 1) Trong dev, đặt @Scheduled chạy mỗi phút (cron: 0 * * * * *).
+### 2) Sửa trực tiếp unlock_at của 1 capsule về quá khứ (SQL), rồi đợi cron chạy.
+### Sau đó gọi GET capsule để kiểm tra status đã chuyển UNLOCKED chưa.
+
+### Lấy chi tiết capsule #1 để kiểm tra status (LOCKED/UNLOCKED)
+GET http://localhost:8080/api/capsules/4
+Authorization: Bearer {{accessToken}}
